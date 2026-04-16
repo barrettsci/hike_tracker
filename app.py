@@ -169,15 +169,13 @@ app_ui = ui.page_navbar(
 
                 /* Collapse sidebar layout to a vertical stack */
                 .bslib-sidebar-layout {
-                    display: flex !important;
-                    flex-direction: column !important;
+                    grid-template-columns: 1fr !important;
+                    grid-template-rows: auto auto !important;
                 }
-                .bslib-sidebar-layout > .sidebar,
-                .bslib-sidebar-layout > .main {
-                    width: 100% !important;
+                .bslib-sidebar-layout > .sidebar {
                     max-width: 100% !important;
-                    min-width: 0 !important;
-                    border: none !important;
+                    border-right: none !important;
+                    border-bottom: 1px solid var(--bs-border-color, #dee2e6) !important;
                 }
 
                 /* Prevent iOS auto-zoom on form fields */
