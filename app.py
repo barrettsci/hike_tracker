@@ -34,41 +34,44 @@ app_ui = ui.page_navbar(
     # ── Tab 1 · Log a Workout ─────────────────────────────────────────────────
     ui.nav_panel(
         "Log a Workout",
-        ui.layout_sidebar(
-            ui.sidebar(
-                ui.h5("Record a training walk, run, hike, or ride"),
-                ui.input_checkbox_group("log_hikers", "Members", choices=MEMBERS,
-                                       inline=False),
+        ui.card(
+            ui.card_header("Record a training walk, run, hike, or ride"),
+            ui.card_body(
                 ui.tags.style("#log_hikers .shiny-options-group { margin-top: 0.2rem; }"),
-                ui.input_date("log_date", "Date", value=date.today()),
-                ui.input_numeric(
-                    "log_elev", "Elevation gain (m)", value=None, min=0, max=6000,
+                ui.input_checkbox_group("log_hikers", "Members", choices=MEMBERS, inline=True),
+                ui.layout_columns(
+                    ui.input_date("log_date", "Date", value=date.today()),
+                    ui.input_select(
+                        "log_activity", "Activity type",
+                        choices=["Hike", "Walk", "Run", "Ride"],
+                    ),
+                    col_widths=[6, 6],
                 ),
-                ui.input_numeric(
-                    "log_dist", "Distance (km)", value=None, min=0, max=200, step=0.1,
-                ),
-                ui.input_text(
-                    "log_dur", "Duration (h:mm)",
-                    placeholder="e.g. 2:30",
-                ),
-                ui.input_select(
-                    "log_activity", "Activity type",
-                    choices=["Hike", "Walk", "Run", "Ride"],
+                ui.layout_columns(
+                    ui.input_numeric(
+                        "log_elev", "Elevation gain (m)", value=None, min=0, max=6000,
+                    ),
+                    ui.input_numeric(
+                        "log_dist", "Distance (km)", value=None, min=0, max=200, step=0.1,
+                    ),
+                    ui.input_text(
+                        "log_dur", "Duration (h:mm)", placeholder="e.g. 2:30",
+                    ),
+                    col_widths=[4, 4, 4],
                 ),
                 ui.input_text_area(
                     "log_notes", "Notes",
                     placeholder="Route, conditions, how it felt…",
-                    rows=3,
+                    rows=2,
                 ),
                 ui.input_action_button(
-                    "log_submit", "Log workout", class_="btn-primary w-100 mt-2",
+                    "log_submit", "Log workout", class_="btn-primary w-100 mt-1",
                 ),
-                width=300,
-                open="open",
+                ui.output_ui("log_status"),
             ),
-            ui.output_ui("log_status"),
-            ui.hr(),
-            ui.h5("Recent workouts (all members)"),
+        ),
+        ui.card(
+            ui.card_header("Recent workouts (all members)"),
             ui.output_data_frame("recent_workouts_table"),
         ),
     ),
