@@ -1,5 +1,5 @@
 ---
-title: Shiny for Python template
+title: Training App
 emoji: 🌍
 colorFrom: yellow
 colorTo: indigo
