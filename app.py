@@ -153,6 +153,7 @@ app_ui = ui.page_navbar(
     id="page",
     fillable_mobile=True,
     header=ui.TagList(
+        ui.busy_indicators.use(spinners=True, pulse=True),
         ui.tags.meta(
             name="viewport",
             content="width=device-width, initial-scale=1",
@@ -164,6 +165,19 @@ app_ui = ui.page_navbar(
                 /* Stack all multi-column grid layouts to a single column */
                 .bslib-grid {
                     grid-template-columns: 1fr !important;
+                }
+
+                /* Collapse sidebar layout to a vertical stack */
+                .bslib-sidebar-layout {
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+                .bslib-sidebar-layout > .sidebar,
+                .bslib-sidebar-layout > .main {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    min-width: 0 !important;
+                    border: none !important;
                 }
 
                 /* Prevent iOS auto-zoom on form fields */
