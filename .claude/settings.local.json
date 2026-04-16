@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /c/Users/dev/Documents/GitHub/training_group/*.py)"
+    ]
+  }
+}
