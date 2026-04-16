@@ -31,13 +31,15 @@ PC = config.PHASE_COLORS
 
 app_ui = ui.page_navbar(
 
-    # ── Tab 1 · Log a Hike ────────────────────────────────────────────────────
+    # ── Tab 1 · Log a Workout ─────────────────────────────────────────────────
     ui.nav_panel(
-        "Log a Hike",
+        "Log a Workout",
         ui.layout_sidebar(
             ui.sidebar(
                 ui.h5("Record a training walk, run, hike, or ride"),
-                ui.input_select("log_hiker", "Your name", choices=MEMBERS),
+                ui.input_checkbox_group("log_hikers", "Members", choices=MEMBERS,
+                                       inline=False),
+                ui.tags.style("#log_hikers .shiny-options-group { margin-top: 0.2rem; }"),
                 ui.input_date("log_date", "Date", value=date.today()),
                 ui.input_numeric(
                     "log_elev", "Elevation gain (m)", value=None, min=0, max=6000,
@@ -66,7 +68,7 @@ app_ui = ui.page_navbar(
             ui.output_ui("log_status"),
             ui.hr(),
             ui.h5("Recent workouts (all members)"),
-            ui.output_data_frame("recent_hikes_table"),
+            ui.output_data_frame("recent_workouts_table"),
         ),
     ),
 
@@ -91,8 +93,8 @@ app_ui = ui.page_navbar(
                 ),
             ),
             ui.card(
-                ui.card_header("Hike log"),
-                ui.output_data_frame("my_hikes_table"),
+                ui.card_header("Workout log"),
+                ui.output_data_frame("my_workouts_table"),
             ),
         ),
     ),
@@ -118,7 +120,7 @@ app_ui = ui.page_navbar(
                 output_widget("chart_group_weekly", height="340px"),
             ),
             ui.card(
-                ui.card_header("Elevation vs distance per hike"),
+                ui.card_header("Elevation vs distance per workout"),
                 output_widget("chart_scatter", height="340px"),
             ),
         ),
@@ -194,13 +196,13 @@ def server(input, output, session):
     _refresh = reactive.value(0)
 
     @reactive.calc
-    def hikes() -> pd.DataFrame:
+    def workouts() -> pd.DataFrame:
         _refresh.get()          # take a dependency so re-runs on refresh
         return sheets.load_hikes()
 
     @reactive.calc
     def weekly_actual() -> pd.DataFrame:
-        df = hikes()
+        df = workouts()
         if df.empty:
             return pd.DataFrame(
                 columns=["hiker_name", "week", "elevation_gain_m", "distance_km"]
@@ -226,7 +228,7 @@ def server(input, output, session):
         all_weeks = list(range(1, current_week + 1))
         rows = []
         for member in MEMBERS:
-            m = wa[wa["hiker_name"] == member].set_index("week")
+            m = wa[wa["hiker_name"] == member].set_index("week")[["elevation_gain_m", "distance_km"]]
             m_full = m.reindex(all_weeks, fill_value=0)
             for w in all_weeks:
                 rows.append({
@@ -240,11 +242,18 @@ def server(input, output, session):
         df["cum_distance_km"] = df.groupby("hiker_name")["cum_distance_km"].cumsum()
         return df
 
-    # ── Log a hike ────────────────────────────────────────────────────────────
+    # ── Log a workout ─────────────────────────────────────────────────────────
 
     @reactive.effect
     @reactive.event(input.log_submit)
-    def _submit_hike():
+    def _submit_workout():
+        hikers = list(input.log_hikers())
+        if not hikers:
+            ui.notification_show(
+                "Please select at least one member.",
+                type="warning", duration=5,
+            )
+            return
         missing = [
             name for name, val in [
                 ("Elevation gain", input.log_elev()),
@@ -265,23 +274,25 @@ def server(input, output, session):
             )
             return
         try:
-            sheets.append_hike(
-                hiker_name=input.log_hiker(),
-                hike_date=input.log_date(),
-                activity_type=input.log_activity(),
-                elevation_gain_m=input.log_elev(),
-                distance_km=input.log_dist(),
-                duration_minutes=dur,
-                notes=input.log_notes() or "",
-            )
+            for hiker in hikers:
+                sheets.append_hike(
+                    hiker_name=hiker,
+                    hike_date=input.log_date(),
+                    activity_type=input.log_activity(),
+                    elevation_gain_m=input.log_elev(),
+                    distance_km=input.log_dist(),
+                    duration_minutes=dur,
+                    notes=input.log_notes() or "",
+                )
             _refresh.set(_refresh.get() + 1)
+            names = ", ".join(hikers)
             ui.notification_show(
-                f"Logged! {int(input.log_elev()):,} m · {input.log_dist()} km",
+                f"Logged for {names} — {int(input.log_elev()):,} m · {input.log_dist()} km",
                 type="message",
                 duration=4,
             )
         except Exception as e:
-            ui.notification_show(f"Error saving hike: {e}", type="error", duration=8)
+            ui.notification_show(f"Error saving workout: {e}", type="error", duration=8)
 
     @reactive.effect
     @reactive.event(input.refresh)
@@ -295,8 +306,8 @@ def server(input, output, session):
 
     @output
     @render.data_frame
-    def recent_hikes_table():
-        df = hikes()
+    def recent_workouts_table():
+        df = workouts()
         if df.empty:
             return render.DataGrid(pd.DataFrame(
                 columns=["Hiker", "Date", "Activity", "Elevation (m)",
@@ -331,7 +342,7 @@ def server(input, output, session):
         m_wa = wa[wa["hiker_name"] == hiker] if not wa.empty else pd.DataFrame()
         total_elev = int(m_wa["elevation_gain_m"].sum()) if not m_wa.empty else 0
         total_dist = round(float(m_wa["distance_km"].sum()), 1) if not m_wa.empty else 0.0
-        n_hikes = int(hikes()[hikes()["hiker_name"] == hiker].shape[0]) if not hikes().empty else 0
+        n_workouts = int(workouts()[workouts()["hiker_name"] == hiker].shape[0]) if not workouts().empty else 0
 
         plan_cum = int(
             PLAN_DF.loc[PLAN_DF["week"] == cw, "cum_elevation_m"].iloc[0]
@@ -351,7 +362,7 @@ def server(input, output, session):
         return ui.div(
             _stat("Total elevation", f"{total_elev:,} m"),
             _stat("Total distance",  f"{total_dist} km"),
-            _stat("Workouts logged",    str(n_hikes)),
+            _stat("Workouts logged",    str(n_workouts)),
             ui.hr(),
             _stat("vs plan (cumulative)",
                   ui.span(status, style=f"color:{status_color};font-weight:600")),
@@ -425,9 +436,9 @@ def server(input, output, session):
 
     @output
     @render.data_frame
-    def my_hikes_table():
+    def my_workouts_table():
         hiker = input.my_hiker()
-        df = hikes()
+        df = workouts()
         if df.empty:
             return render.DataGrid(pd.DataFrame())
         m = (
@@ -566,13 +577,14 @@ def server(input, output, session):
             xaxis=dict(title="Training week", range=[0.5, 26.5], showgrid=False),
             barmode="group",
             legend=dict(orientation="h", y=1.08, x=0),
+            margin=dict(l=50, r=20, t=30, b=80),
         ))
         return fig
 
     @output
     @render_plotly
     def chart_scatter():
-        df = hikes()
+        df = workouts()
         fig = go.Figure()
         if df.empty:
             fig.add_annotation(
@@ -604,6 +616,7 @@ def server(input, output, session):
             xaxis=dict(title="Distance (km)", showgrid=True, gridcolor="#eee"),
             yaxis_title="Elevation gain (m)",
             legend=dict(orientation="h", y=1.08, x=0),
+            margin=dict(l=50, r=20, t=30, b=80),
         ))
         return fig
 
