@@ -167,25 +167,8 @@ app_ui = ui.page_navbar(
                     grid-template-columns: 1fr !important;
                 }
 
-                /* Collapse sidebar layout to a vertical stack */
-                .bslib-sidebar-layout {
-                    grid-template-columns: minmax(0, 1fr) !important;
-                    overflow-x: hidden !important;
-                }
-                .bslib-sidebar-layout > .sidebar,
-                .bslib-sidebar-layout > .main {
-                    grid-column: 1 !important;
-                    min-width: 0 !important;
-                    max-width: 100% !important;
-                }
-                .bslib-sidebar-layout > .sidebar {
-                    grid-row: 1 !important;
-                    border-right: none !important;
-                    border-bottom: 1px solid var(--bs-border-color, #dee2e6) !important;
-                }
-                .bslib-sidebar-layout > .main {
-                    grid-row: 2 !important;
-                }
+                /* Prevent any horizontal bleed at the page level */
+                body { overflow-x: hidden; }
 
                 /* Prevent iOS auto-zoom on form fields */
                 input, select, textarea, .form-control, .form-select {
@@ -233,10 +216,38 @@ app_ui = ui.page_navbar(
             }
         """),
         ui.tags.script("""
+        function fixMobileSidebars() {
+            if (window.innerWidth >= 768) return;
+            document.querySelectorAll('.bslib-sidebar-layout').forEach(function(el) {
+                el.style.setProperty('grid-template-columns', 'minmax(0, 1fr)', 'important');
+                el.style.setProperty('overflow-x', 'hidden', 'important');
+                var sidebar = el.querySelector('.sidebar, .bslib-sidebar-panel');
+                if (sidebar) {
+                    sidebar.style.setProperty('grid-column', '1', 'important');
+                    sidebar.style.setProperty('grid-row', '1', 'important');
+                    sidebar.style.setProperty('max-width', '100%', 'important');
+                    sidebar.style.setProperty('min-width', '0', 'important');
+                    sidebar.style.setProperty('border-right', 'none', 'important');
+                }
+                var main = el.querySelector('.main, .bslib-main');
+                if (main) {
+                    main.style.setProperty('grid-column', '1', 'important');
+                    main.style.setProperty('grid-row', '2', 'important');
+                    main.style.setProperty('min-width', '0', 'important');
+                }
+            });
+        }
+
         $(document).on('shiny:connected', function() {
+            fixMobileSidebars();
             var p = localStorage.getItem('bogong_pw');
             if (p) Shiny.setInputValue('stored_password', p, {priority: 'event'});
         });
+        $(document).on('shiny:value shiny:outputinvalidated', function() {
+            setTimeout(fixMobileSidebars, 50);
+        });
+        window.addEventListener('resize', fixMobileSidebars);
+
         Shiny.addCustomMessageHandler('save_password', function(pw) {
             if (pw) localStorage.setItem('bogong_pw', pw);
             else localStorage.removeItem('bogong_pw');
