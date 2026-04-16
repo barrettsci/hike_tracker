@@ -2,5 +2,7 @@ credentials.json
 .env
 __pycache__/
 *.pyc
+.venv/
+.DS_Store
 .Rproj.user
 rsconnect/
