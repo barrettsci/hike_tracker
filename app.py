@@ -59,13 +59,13 @@ app_ui = ui.page_navbar(
                     rows=3,
                 ),
                 ui.input_action_button(
-                    "log_submit", "Log hike", class_="btn-primary w-100 mt-2",
+                    "log_submit", "Log workout", class_="btn-primary w-100 mt-2",
                 ),
                 width=300,
             ),
             ui.output_ui("log_status"),
             ui.hr(),
-            ui.h5("Recent hikes (all members)"),
+            ui.h5("Recent workouts (all members)"),
             ui.output_data_frame("recent_hikes_table"),
         ),
     ),
@@ -166,6 +166,11 @@ def server(input, output, session):
                 ui.input_password("password", "", placeholder="Password"),
                 ui.input_action_button(
                     "login_submit", "Enter", class_="btn-primary w-100 mt-2",
+                ),
+                ui.tags.script(
+                    "document.getElementById('password').addEventListener('keydown', function(e) {"
+                    "  if (e.key === 'Enter') document.getElementById('login_submit').click();"
+                    "});"
                 ),
                 title="⛰  Bogong 2026",
                 footer=None,
@@ -346,7 +351,7 @@ def server(input, output, session):
         return ui.div(
             _stat("Total elevation", f"{total_elev:,} m"),
             _stat("Total distance",  f"{total_dist} km"),
-            _stat("Hikes logged",    str(n_hikes)),
+            _stat("Workouts logged",    str(n_hikes)),
             ui.hr(),
             _stat("vs plan (cumulative)",
                   ui.span(status, style=f"color:{status_color};font-weight:600")),
@@ -571,7 +576,7 @@ def server(input, output, session):
         fig = go.Figure()
         if df.empty:
             fig.add_annotation(
-                text="No hikes logged yet",
+                text="No training logged yet",
                 xref="paper", yref="paper", x=0.5, y=0.5,
                 showarrow=False, font=dict(size=14, color="#aaa"),
             )
