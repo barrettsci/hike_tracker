@@ -82,6 +82,7 @@ app_ui = ui.page_navbar(
                 ui.hr(),
                 ui.output_ui("my_stats_panel"),
                 width=240,
+                open="open",
             ),
             ui.layout_columns(
                 ui.card(
@@ -151,8 +152,62 @@ app_ui = ui.page_navbar(
     header=ui.TagList(
         ui.tags.meta(
             name="viewport",
-            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+            content="width=device-width, initial-scale=1",
         ),
+        ui.tags.style("""
+            /* ── Mobile optimisation ─────────────────────────────────── */
+            @media (max-width: 767.98px) {
+
+                /* Stack all multi-column grid layouts to a single column */
+                .bslib-grid {
+                    grid-template-columns: 1fr !important;
+                }
+
+                /* Prevent iOS auto-zoom on form fields */
+                input, select, textarea, .form-control, .form-select {
+                    font-size: 16px !important;
+                }
+
+                /* Minimum touch-target size for buttons */
+                .btn {
+                    min-height: 44px;
+                    padding-top: 0.5rem;
+                    padding-bottom: 0.5rem;
+                }
+
+                /* Tighten card padding so more content fits */
+                .card-body {
+                    padding: 0.75rem;
+                }
+                .card {
+                    margin-bottom: 0.75rem;
+                }
+
+                /* Horizontal scroll for data tables */
+                .shiny-data-grid-output,
+                .shiny-data-frame,
+                .dataTables_wrapper {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                /* Nav tabs: scroll horizontally instead of wrapping */
+                .navbar-nav {
+                    flex-direction: row !important;
+                    flex-wrap: nowrap !important;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
+                .navbar-nav .nav-item {
+                    flex-shrink: 0;
+                }
+
+                /* Give value-cards a bit more breathing room when stacked */
+                .card.text-center .card-body {
+                    padding: 0.6rem 0.5rem;
+                }
+            }
+        """),
         ui.tags.script("""
         $(document).on('shiny:connected', function() {
             var p = localStorage.getItem('bogong_pw');
