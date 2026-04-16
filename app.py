@@ -135,7 +135,7 @@ app_ui = ui.page_navbar(
         "Training Plan",
         ui.card(
             ui.card_header(
-                "26-week Uphill Athlete plan · target: 1 800 m in a day · October 10 2026"
+                "26-week Uphill Athlete plan · target: 1800 m in a day · 10 Oct 2026"
             ),
             output_widget("chart_plan_overview", height="360px"),
         ),
@@ -148,7 +148,12 @@ app_ui = ui.page_navbar(
     title="⛰  Bogong 2026",
     id="page",
     fillable_mobile=True,
-    header=ui.tags.script("""
+    header=ui.TagList(
+        ui.tags.meta(
+            name="viewport",
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+        ),
+        ui.tags.script("""
         $(document).on('shiny:connected', function() {
             var p = localStorage.getItem('bogong_pw');
             if (p) Shiny.setInputValue('stored_password', p, {priority: 'event'});
@@ -158,6 +163,7 @@ app_ui = ui.page_navbar(
             else localStorage.removeItem('bogong_pw');
         });
     """),
+    ),
 )
 
 
@@ -738,6 +744,7 @@ def _layout(**overrides) -> dict:
         paper_bgcolor="white",
         font=dict(family="system-ui, -apple-system, sans-serif", size=12),
         hovermode="x unified",
+        dragmode=False,
         yaxis=dict(showgrid=True, gridcolor="#f0f0f0", zeroline=False),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
