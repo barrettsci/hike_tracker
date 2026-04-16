@@ -6,6 +6,7 @@ Deploy:       rsconnect deploy shiny . --name <account> --title mountain-trainin
 
 from __future__ import annotations
 
+import os
 from datetime import date
 
 import pandas as pd
@@ -28,7 +29,9 @@ PC = config.PHASE_COLORS
 # UI
 # ══════════════════════════════════════════════════════════════════════════════
 
-app_ui = ui.page_navbar(
+app_ui = ui.page_fluid(ui.output_ui("page_content"))
+
+_navbar = ui.page_navbar(
 
     # ── Tab 1 · Log a Hike ────────────────────────────────────────────────────
     ui.nav_panel(
@@ -152,6 +155,40 @@ app_ui = ui.page_navbar(
 # ══════════════════════════════════════════════════════════════════════════════
 
 def server(input, output, session):
+
+    # ── Auth ──────────────────────────────────────────────────────────────────
+
+    _PASSWORD = os.environ.get("APP_PASSWORD", "")
+    _authenticated = reactive.value(not _PASSWORD)  # open if no password set
+
+    @output
+    @render.ui
+    def page_content():
+        if _authenticated.get():
+            return _navbar
+        return ui.div(
+            ui.card(
+                ui.card_header("⛰  Bogong 2026"),
+                ui.card_body(
+                    ui.p("Enter the group password to continue.",
+                         class_="text-muted"),
+                    ui.input_password("password", "", placeholder="Password"),
+                    ui.input_action_button(
+                        "login_submit", "Enter",
+                        class_="btn-primary w-100 mt-2",
+                    ),
+                ),
+            ),
+            style="max-width:340px; margin:120px auto;",
+        )
+
+    @reactive.effect
+    @reactive.event(input.login_submit)
+    def _check_password():
+        if input.password() == _PASSWORD:
+            _authenticated.set(True)
+        else:
+            ui.notification_show("Incorrect password", type="error", duration=3)
 
     # ── Reactive data core ────────────────────────────────────────────────────
 
