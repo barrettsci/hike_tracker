@@ -173,9 +173,13 @@ def server(input, output, session):
             ))
 
     @reactive.effect
-    @reactive.event(input.login_submit)
     def _check_password():
-        if input.password() == _PASSWORD:
+        n = input.login_submit()   # reactive dependency — re-runs on every click
+        if not n:
+            return
+        with reactive.isolate():   # read password without adding it as a trigger
+            entered = input.password()
+        if entered == _PASSWORD:
             ui.modal_remove()
         else:
             ui.notification_show("Incorrect password", type="error", duration=3)
