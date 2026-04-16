@@ -64,6 +64,7 @@ app_ui = ui.page_navbar(
                     "log_submit", "Log workout", class_="btn-primary w-100 mt-2",
                 ),
                 width=300,
+                open="open",
             ),
             ui.output_ui("log_status"),
             ui.hr(),
@@ -147,6 +148,16 @@ app_ui = ui.page_navbar(
     title="⛰  Bogong 2026",
     id="page",
     fillable_mobile=True,
+    header=ui.tags.script("""
+        $(document).on('shiny:connected', function() {
+            var p = localStorage.getItem('bogong_pw');
+            if (p) Shiny.setInputValue('stored_password', p, {priority: 'event'});
+        });
+        Shiny.addCustomMessageHandler('save_password', function(pw) {
+            if (pw) localStorage.setItem('bogong_pw', pw);
+            else localStorage.removeItem('bogong_pw');
+        });
+    """),
 )
 
 
@@ -180,6 +191,15 @@ def server(input, output, session):
             ))
 
     @reactive.effect
+    def _check_stored_password():
+        try:
+            stored = input.stored_password()
+        except Exception:
+            return
+        if _PASSWORD and stored == _PASSWORD:
+            ui.modal_remove()
+
+    @reactive.effect
     def _check_password():
         n = input.login_submit()   # reactive dependency — re-runs on every click
         if not n:
@@ -188,6 +208,7 @@ def server(input, output, session):
             entered = input.password()
         if entered == _PASSWORD:
             ui.modal_remove()
+            session.send_custom_message("save_password", entered)
         else:
             ui.notification_show("Incorrect password", type="error", duration=3)
 
