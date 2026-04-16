@@ -158,7 +158,7 @@ def server(input, output, session):
 
     # ── Auth ──────────────────────────────────────────────────────────────────
 
-    _PASSWORD = os.environ.get("APP_PASSWORD", "")
+    _PASSWORD = os.environ.get("APP_PASSWORD", "").strip()
     _authenticated = reactive.value(not _PASSWORD)  # open if no password set
 
     @output
