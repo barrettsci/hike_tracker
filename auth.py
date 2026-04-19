@@ -20,7 +20,6 @@ _COOKIE = "hike_tracker_auth"
 _COOKIE_EXPIRY = datetime(2026, 10, 10)
 
 
-@st.cache_resource
 def _cookie_manager() -> stx.CookieManager:
     return stx.CookieManager()
 
