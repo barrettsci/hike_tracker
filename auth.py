@@ -98,9 +98,11 @@ def require_auth() -> None:
         return
 
     st.title("⛰ Bogong 2026")
-    pwd = st.text_input("Password", type="password", label_visibility="collapsed",
-                        placeholder="Enter password…")
-    if st.button("Enter", use_container_width=True):
+    with st.form("auth_form"):
+        pwd = st.text_input("Password", type="password", label_visibility="collapsed",
+                            placeholder="Enter password…")
+        submitted = st.form_submit_button("Enter", use_container_width=True)
+    if submitted:
         if pwd == pwd_env:
             st.session_state.authenticated = True
             st.query_params["auth"] = token
