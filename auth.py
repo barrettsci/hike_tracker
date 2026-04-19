@@ -2,19 +2,23 @@
 Password gate and global mobile CSS.
 
 Every page calls require_auth() as its first statement.
-Auth is persisted in a browser cookie so a page refresh doesn't re-prompt.
-The cookie expires on event day (2026-10-10).
+
+Auth is persisted via a URL query parameter (?auth=<token>). After a correct
+password entry the token is appended to the URL, so refreshes and navigation
+stay authenticated without needing cookies or external dependencies.
 """
 
 from __future__ import annotations
 
+import hashlib
 import os
 
 import streamlit as st
-from streamlit_cookies_controller import CookieController
 
-# Cookie name stored in the browser
-_COOKIE = "hike_tracker_auth"
+
+def _token(pwd: str) -> str:
+    """Derive a short URL-safe token from the password."""
+    return hashlib.sha256(pwd.encode()).hexdigest()[:24]
 
 
 _MOBILE_CSS = """
@@ -81,11 +85,16 @@ def require_auth() -> None:
     if not pwd_env:
         return
 
-    cookies = CookieController()
+    token = _token(pwd_env)
 
-    # Already authenticated this session or cookie present from a previous session
-    if st.session_state.get("authenticated") or cookies.get(_COOKIE) == "1":
+    # Valid token in URL — stay authenticated and keep it in sync with session state
+    if st.query_params.get("auth") == token:
         st.session_state.authenticated = True
+        return
+
+    # Same session, different page (query params may have been cleared by navigation)
+    if st.session_state.get("authenticated"):
+        st.query_params["auth"] = token
         return
 
     st.title("⛰ Bogong 2026")
@@ -94,7 +103,7 @@ def require_auth() -> None:
     if st.button("Enter", use_container_width=True):
         if pwd == pwd_env:
             st.session_state.authenticated = True
-            cookies.set(_COOKIE, "1")
+            st.query_params["auth"] = token
             st.rerun()
         else:
             st.error("Incorrect password")
