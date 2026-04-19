@@ -9,19 +9,12 @@ The cookie expires on event day (2026-10-10).
 from __future__ import annotations
 
 import os
-from datetime import datetime
 
-import extra_streamlit_components as stx
 import streamlit as st
+from streamlit_cookies_controller import CookieController
 
 # Cookie name stored in the browser
 _COOKIE = "hike_tracker_auth"
-# Cookie expires on event day — no need to re-authenticate before then
-_COOKIE_EXPIRY = datetime(2026, 10, 10)
-
-
-def _cookie_manager() -> stx.CookieManager:
-    return stx.CookieManager()
 
 
 _MOBILE_CSS = """
@@ -88,7 +81,7 @@ def require_auth() -> None:
     if not pwd_env:
         return
 
-    cookies = _cookie_manager()
+    cookies = CookieController()
 
     # Already authenticated this session or cookie present from a previous session
     if st.session_state.get("authenticated") or cookies.get(_COOKIE) == "1":
@@ -101,7 +94,7 @@ def require_auth() -> None:
     if st.button("Enter", use_container_width=True):
         if pwd == pwd_env:
             st.session_state.authenticated = True
-            cookies.set(_COOKIE, "1", expires_at=_COOKIE_EXPIRY)
+            cookies.set(_COOKIE, "1")
             st.rerun()
         else:
             st.error("Incorrect password")
