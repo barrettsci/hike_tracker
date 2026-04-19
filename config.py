@@ -1,7 +1,7 @@
 from datetime import date
 
 # ── Update these with real names before sharing ────────────────────────────────
-MEMBERS = ["Marina", "Mika", "Hannah", "Nick", "Luke"]
+MEMBERS = ["Marina", "Miheka", "Hannah", "Nick", "Luke"]
 
 MEMBER_COLORS = {
     MEMBERS[0]: "#E63946",
