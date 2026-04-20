@@ -74,5 +74,5 @@ def show_nav(current: str = "") -> None:
                 st.markdown(f'<a class="nav-btn nav-selected" href="{href}{auth_suffix}">{label}</a>',
                             unsafe_allow_html=True)
             else:
-                st.markdown(f'<a class="nav-btn" href="{href}{auth_suffix}" target="_blank">{label}</a>',
+                st.markdown(f'<a class="nav-btn" href="{href}{auth_suffix}">{label}</a>',
                             unsafe_allow_html=True)
