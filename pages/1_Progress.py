@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
+import pandas as pd
 import streamlit as st
 
 import plan as training_plan
@@ -27,7 +28,7 @@ st.title("Progress")
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 
-df = load_workouts()
+df: pd.DataFrame = load_workouts()
 wa = weekly_actual(df)
 ca = cumulative_actual(df)
 

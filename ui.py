@@ -70,6 +70,9 @@ def show_nav(current: str = "") -> None:
     cols = st.columns(len(_PAGES))
     for col, (href, label, key) in zip(cols, _PAGES):
         with col:
-            cls = "nav-btn nav-selected" if key == current else "nav-btn"
-            st.markdown(f'<a class="{cls}" href="{href}{auth_suffix}">{label}</a>',
-                        unsafe_allow_html=True)
+            if key == current:
+                st.markdown(f'<a class="nav-btn nav-selected" href="{href}{auth_suffix}">{label}</a>',
+                            unsafe_allow_html=True)
+            else:
+                st.markdown(f'<a class="nav-btn" href="{href}{auth_suffix}" target="_blank">{label}</a>',
+                            unsafe_allow_html=True)
