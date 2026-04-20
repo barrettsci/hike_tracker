@@ -40,7 +40,7 @@ def _base_fig(**extra_layout) -> go.Figure:
 
 def make_group_cumulative(cum_df: pd.DataFrame, plan_df: pd.DataFrame) -> go.Figure:
     """Multi-line: all members cumulative elevation vs plan."""
-    fig = _base_fig(title=None)
+    fig = _base_fig()
 
     fig.add_trace(go.Scatter(
         x=plan_df["week"],
@@ -80,7 +80,7 @@ def make_group_totals(workouts_df: pd.DataFrame) -> go.Figure:
     values = [totals[m] for m in members]
     colors = [MEMBER_COLORS.get(m, "#333") for m in members]
 
-    fig = _base_fig(title=None)
+    fig = _base_fig()
     fig.add_trace(go.Bar(
         x=members,
         y=values,
@@ -97,7 +97,7 @@ def make_group_totals(workouts_df: pd.DataFrame) -> go.Figure:
 
 def make_group_weekly_stacked(weekly_df: pd.DataFrame, plan_df: pd.DataFrame) -> go.Figure:
     """Grouped bar: weekly elevation by member + plan target line."""
-    fig = _base_fig(title=None, barmode="group")
+    fig = _base_fig(barmode="group")
 
     all_weeks = list(range(1, 27))
 
@@ -126,7 +126,7 @@ def make_group_weekly_stacked(weekly_df: pd.DataFrame, plan_df: pd.DataFrame) ->
 
 def make_scatter(workouts_df: pd.DataFrame) -> go.Figure:
     """Scatter: elevation gain vs distance, each workout coloured by member."""
-    fig = _base_fig(title=None)
+    fig = _base_fig()
 
     if workouts_df.empty:
         return fig
@@ -158,7 +158,7 @@ def make_scatter(workouts_df: pd.DataFrame) -> go.Figure:
 
 def make_plan_overview(plan_df: pd.DataFrame) -> go.Figure:
     """Stacked bar: weekly target elevation by phase + 1800 m event line."""
-    fig = _base_fig(title=None, barmode="stack")
+    fig = _base_fig(barmode="stack")
 
     for phase, color in PHASE_COLORS.items():
         rows = plan_df[plan_df["phase"] == phase]

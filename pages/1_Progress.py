@@ -49,7 +49,7 @@ st.divider()
 
 # ── Charts ────────────────────────────────────────────────────────────────────
 
-st.subheader("Cumulative elevation — all members vs plan")
+st.subheader("Cumulative elevation vs plan")
 st.plotly_chart(
     make_group_cumulative(ca, PLAN_DF),
     use_container_width=True,
@@ -63,7 +63,7 @@ st.plotly_chart(
     config=PLOTLY_CFG,
 )
 
-st.subheader("Weekly elevation vs plan target")
+st.subheader("Weekly elevation vs plan")
 st.plotly_chart(
     make_group_weekly_stacked(wa, PLAN_DF),
     use_container_width=True,
