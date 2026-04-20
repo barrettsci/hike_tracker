@@ -23,7 +23,7 @@ PLOTLY_CFG: dict = {"displayModeBar": False, "scrollZoom": False}
 _LAYOUT = dict(
     margin=dict(l=8, r=8, t=36, b=8),
     dragmode=False,
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(size=11), title=dict(text="")),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(size=11)),
     font=dict(size=12),
     plot_bgcolor="rgba(0,0,0,0)",
     paper_bgcolor="rgba(0,0,0,0)",
@@ -33,64 +33,6 @@ _LAYOUT = dict(
 def _base_fig(**extra_layout) -> go.Figure:
     fig = go.Figure()
     fig.update_layout(**_LAYOUT, **extra_layout)
-    return fig
-
-
-# ── Individual charts ─────────────────────────────────────────────────────────
-
-def make_cumulative_chart(cum_df: pd.DataFrame, plan_df: pd.DataFrame, member: str) -> go.Figure:
-    """Line: member cumulative elevation vs plan, week by week."""
-    fig = _base_fig(title=None)
-
-    # Plan line
-    fig.add_trace(go.Scatter(
-        x=plan_df["week"],
-        y=plan_df["cum_elevation_m"],
-        mode="lines",
-        name="Plan",
-        line=dict(color="#aaa", dash="dash", width=2),
-    ))
-
-    # Member line
-    m = cum_df[cum_df["hiker_name"] == member]
-    if not m.empty:
-        fig.add_trace(go.Scatter(
-            x=m["week"],
-            y=m["cum_elevation_m"],
-            mode="lines+markers",
-            name=member,
-            line=dict(color=MEMBER_COLORS.get(member, "#333"), width=2.5),
-            marker=dict(size=5),
-        ))
-
-    fig.update_xaxes(title_text="Week", dtick=4, fixedrange=True)
-    fig.update_yaxes(title_text="Elevation (m)", fixedrange=True)
-    return fig
-
-
-def make_weekly_chart(weekly_df: pd.DataFrame, plan_df: pd.DataFrame, member: str) -> go.Figure:
-    """Bar: member weekly elevation actual vs plan target."""
-    fig = _base_fig(title=None, barmode="group")
-
-    m = weekly_df[weekly_df["hiker_name"] == member] if not weekly_df.empty else pd.DataFrame()
-
-    fig.add_trace(go.Bar(
-        x=plan_df["week"],
-        y=plan_df["target_elevation_m"],
-        name="Target",
-        marker_color="#ddd",
-    ))
-
-    if not m.empty:
-        fig.add_trace(go.Bar(
-            x=m["week"],
-            y=m["elevation_gain_m"],
-            name=member,
-            marker_color=MEMBER_COLORS.get(member, "#333"),
-        ))
-
-    fig.update_xaxes(title_text="Week", dtick=4, fixedrange=True)
-    fig.update_yaxes(title_text="Elevation (m)", fixedrange=True)
     return fig
 
 
@@ -126,8 +68,8 @@ def make_group_cumulative(cum_df: pd.DataFrame, plan_df: pd.DataFrame) -> go.Fig
     return fig
 
 
-def make_group_totals(workouts_df: pd.DataFrame, plan_target: int) -> go.Figure:
-    """Horizontal bar: total elevation per member with plan target line."""
+def make_group_totals(workouts_df: pd.DataFrame) -> go.Figure:
+    """Horizontal bar: total elevation per member."""
     totals = {m: 0 for m in MEMBERS}
     if not workouts_df.empty:
         for m, grp in workouts_df.groupby("hiker_name"):
@@ -147,16 +89,6 @@ def make_group_totals(workouts_df: pd.DataFrame, plan_target: int) -> go.Figure:
         text=[f"{v:,} m" for v in values],
         textposition="outside",
     ))
-
-    # Plan cumulative target line
-    fig.add_hline(
-        y=plan_target,
-        line_dash="dash",
-        line_color="#aaa",
-        annotation_text="Plan target",
-        annotation_position="top right",
-        annotation_font_size=10,
-    )
 
     fig.update_xaxes(fixedrange=True)
     fig.update_yaxes(title_text="Elevation (m)", fixedrange=True)

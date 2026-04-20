@@ -1,4 +1,4 @@
-"""Page 3 — Group Progress: team-wide stats and charts."""
+"""Page 2 — Progress: team-wide stats and charts."""
 
 from __future__ import annotations
 
@@ -17,11 +17,13 @@ from charts import (
 )
 from config import EVENT_DATE
 from data import PLAN_DF, cumulative_actual, load_workouts, weekly_actual
+from ui import show_nav
 
-st.set_page_config(page_title="Group Progress · Bogong 2026", page_icon="⛰", layout="centered")
+st.set_page_config(page_title="Progress · Bogong 2026", page_icon="⛰", layout="centered")
 require_auth()
+show_nav("progress")
 
-st.title("Group Progress")
+st.title("Progress")
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 
@@ -56,7 +58,7 @@ st.plotly_chart(
 
 st.subheader("Total elevation to date")
 st.plotly_chart(
-    make_group_totals(df, plan_cum_target),
+    make_group_totals(df),
     use_container_width=True,
     config=PLOTLY_CFG,
 )

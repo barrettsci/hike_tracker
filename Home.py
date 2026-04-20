@@ -17,14 +17,12 @@ import sheets
 from auth import require_auth
 from config import MEMBERS
 from data import load_workouts
+from ui import show_nav
 
-st.set_page_config(
-    page_title="Bogong 2026",
-    page_icon="⛰",
-    layout="centered",
-)
+st.set_page_config(page_title="Bogong 2026", page_icon="⛰", layout="centered")
 
 require_auth()
+show_nav("log")
 
 st.title("⛰ Bogong 2026")
 
