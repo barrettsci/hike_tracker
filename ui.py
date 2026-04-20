@@ -18,7 +18,7 @@ def show_nav(current: str = "") -> None:
     Args:
         current: key of the active page ("log", "progress", or "plan").
     """
-    st.html("""
+    st.markdown("""
 <style>
 [data-testid^="stSidebar"],
 [data-testid="collapsedControl"],
@@ -56,13 +56,14 @@ def show_nav(current: str = "") -> None:
     cursor: default !important;
     pointer-events: none !important;
 }
-/* Remove the <p> wrapper from layout so all buttons size identically */
-[data-testid="stMarkdown"] p:has(.nav-btn) {
+/* Size st.html nav buttons identically to the old st.markdown ones */
+[data-testid="stHtml"] p:has(.nav-btn),
+[data-testid="stHtml"] div:has(.nav-btn) {
     display: contents !important;
 }
 </style>
 <div style="height: 60px"></div>
-""")
+""", unsafe_allow_html=True)
 
     auth_token = st.query_params.get("auth", "")
     auth_suffix = f"?auth={auth_token}" if auth_token else ""
