@@ -23,7 +23,7 @@ PLOTLY_CFG: dict = {"displayModeBar": False, "scrollZoom": False}
 _LAYOUT = dict(
     margin=dict(l=8, r=8, t=36, b=8),
     dragmode=False,
-    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(size=11), title_text=""),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(size=11), title=dict(text="")),
     font=dict(size=12),
     plot_bgcolor="rgba(0,0,0,0)",
     paper_bgcolor="rgba(0,0,0,0)",
