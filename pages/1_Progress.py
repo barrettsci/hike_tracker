@@ -41,10 +41,14 @@ plan_cum_target = int(
 
 # ── Header stats ──────────────────────────────────────────────────────────────
 
+st.markdown(
+    "<style>[data-testid='stMetricValue']{font-size:1.1rem!important}"
+    "[data-testid='stMetricLabel']{font-size:0.75rem!important}</style>",
+    unsafe_allow_html=True,
+)
 col1, col2, col3 = st.columns(3)
 col1.metric("Days to climb", days_left)
 col2.metric("Current week", f"Week {cw}" if cw > 0 else "—")
-col3.metric("Plan target to date", f"{plan_cum_target:,} m")
 
 st.divider()
 
