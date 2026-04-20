@@ -18,7 +18,7 @@ def show_nav(current: str = "") -> None:
     Args:
         current: key of the active page ("log", "progress", or "plan").
     """
-    st.markdown("""
+    st.html("""
 <style>
 [data-testid^="stSidebar"],
 [data-testid="collapsedControl"],
@@ -62,7 +62,7 @@ def show_nav(current: str = "") -> None:
 }
 </style>
 <div style="height: 60px"></div>
-""", unsafe_allow_html=True)
+""")
 
     auth_token = st.query_params.get("auth", "")
     auth_suffix = f"?auth={auth_token}" if auth_token else ""
@@ -71,8 +71,6 @@ def show_nav(current: str = "") -> None:
     for col, (href, label, key) in zip(cols, _PAGES):
         with col:
             if key == current:
-                st.markdown(f'<a class="nav-btn nav-selected" href="{href}{auth_suffix}">{label}</a>',
-                            unsafe_allow_html=True)
+                st.html(f'<a class="nav-btn nav-selected" href="{href}{auth_suffix}">{label}</a>')
             else:
-                st.markdown(f'<a class="nav-btn" href="{href}{auth_suffix}">{label}</a>',
-                            unsafe_allow_html=True)
+                st.html(f'<a class="nav-btn" href="{href}{auth_suffix}">{label}</a>')
