@@ -17,7 +17,7 @@ import plotly.graph_objects as go
 from config import MEMBER_COLORS, MEMBERS, PHASE_COLORS
 
 # Shared config dict passed to every st.plotly_chart() call
-PLOTLY_CFG: dict = {"displayModeBar": False, "scrollZoom": False}
+PLOTLY_CFG: dict = {"displayModeBar": False, "scrollZoom": False, "staticPlot": True}
 
 # Shared layout defaults applied to every figure
 _LAYOUT = dict(
@@ -141,12 +141,6 @@ def make_scatter(workouts_df: pd.DataFrame) -> go.Figure:
             mode="markers",
             name=member,
             marker=dict(color=MEMBER_COLORS.get(member, "#333"), size=8, opacity=0.75),
-            hovertemplate=(
-                "<b>%{text}</b><br>"
-                "Distance: %{x} km<br>"
-                "Elevation: %{y} m<extra></extra>"
-            ),
-            text=m["activity_type"],
         ))
 
     fig.update_xaxes(title_text="Distance (km)", fixedrange=True)
