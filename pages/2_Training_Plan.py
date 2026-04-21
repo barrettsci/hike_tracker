@@ -30,17 +30,14 @@ st.subheader("Week-by-week schedule")
 
 table = (
     PLAN_DF[["week", "phase", "week_start", "week_end",
-             "target_elevation_m", "target_distance_km",
-             "cum_elevation_m", "cum_distance_km", "notes"]]
+             "target_elevation_m", "cum_elevation_m", "notes"]]
     .rename(columns={
         "week": "Week",
         "phase": "Phase",
         "week_start": "Start",
         "week_end": "End",
         "target_elevation_m": "Elev target (m)",
-        "target_distance_km": "Dist target (km)",
         "cum_elevation_m": "Cum elev (m)",
-        "cum_distance_km": "Cum dist (km)",
         "notes": "Notes",
     })
 )
