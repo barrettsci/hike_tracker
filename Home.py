@@ -24,7 +24,7 @@ st.set_page_config(page_title="Bogong 2026", page_icon="⛰", layout="centered")
 require_auth()
 show_nav("log")
 
-st.title("⛰ Bogong 2026")
+st.title("⛰ Marina's 40th")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -60,6 +60,8 @@ with st.form("log_form", clear_on_submit=True):
                               placeholder="e.g. 12.5", format="%.1f")
 
     dur_raw = st.text_input("Duration (h:mm)", placeholder="e.g. 2:30")
+    pack_weight = st.number_input("Pack weight (kg)", min_value=0.0, max_value=50.0, value=0.0, step=0.5,
+                                  help="Leave at 0 if no pack. Used to calculate Pandolf-adjusted elevation.")
     notes = st.text_area("Notes", placeholder="Route, conditions, how it felt…", height=80)
 
     submitted = st.form_submit_button("Log workout", use_container_width=True, type="primary")
@@ -80,6 +82,7 @@ if submitted:
         for e in errors:
             st.error(e)
     else:
+        assert elev is not None and dist is not None and dur is not None
         try:
             for member in members:
                 sheets.append_hike(
@@ -89,11 +92,17 @@ if submitted:
                     elevation_gain_m=elev,
                     distance_km=dist,
                     duration_minutes=dur,
+                    pack_weight_kg=pack_weight,
                     notes=notes or "",
                 )
             load_workouts.clear()
             names = ", ".join(members)
-            st.success(f"Logged for {names} — {int(elev):,} m · {dist} km")
+            msg = f"Logged for {names} — {int(elev):,} m · {dist} km"
+            if pack_weight > 0:
+                from data import pandolf_adjusted_elev
+                adj = pandolf_adjusted_elev(elev, pack_weight, members[0])
+                msg += f" · pack {pack_weight} kg → adjusted {int(adj):,} m"
+            st.success(msg)
         except Exception as exc:
             st.error(f"Error saving workout: {exc}")
 
@@ -111,12 +120,15 @@ else:
         df.sort_values("hike_date", ascending=False)
         .head(30)
         [["hiker_name", "hike_date", "activity_type", "elevation_gain_m",
+          "adjusted_elevation_m", "pack_weight_kg",
           "distance_km", "duration_minutes", "notes"]]
         .rename(columns={
             "hiker_name": "Member",
             "hike_date": "Date",
             "activity_type": "Activity",
             "elevation_gain_m": "Elev (m)",
+            "adjusted_elevation_m": "Adj Elev (m)",
+            "pack_weight_kg": "Pack (kg)",
             "distance_km": "Dist (km)",
             "duration_minutes": "Dur (min)",
             "notes": "Notes",

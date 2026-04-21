@@ -21,3 +21,12 @@ PHASE_COLORS = {
 PLAN_START = date(2026, 4, 13)   # Monday of week 1
 EVENT_DATE = date(2026, 10, 10)  # Summit day
 HIKES_SHEET = "hikes"
+
+# Body weights used for Pandolf pack-adjusted elevation. Update as needed.
+MEMBER_WEIGHTS_KG: dict[str, float] = {
+    "Marina": 55.0,
+    "Miheka": 55.0,
+    "Hannah": 55.0,
+    "Nick":   90.0,
+    "Luke":   80.0,
+}

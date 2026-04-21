@@ -68,13 +68,14 @@ def make_group_cumulative(cum_df: pd.DataFrame, plan_df: pd.DataFrame) -> go.Fig
     return fig
 
 
-def make_group_totals(workouts_df: pd.DataFrame) -> go.Figure:
-    """Horizontal bar: total elevation per member."""
+def make_group_totals(workouts_df: pd.DataFrame, elev_col: str = "elevation_gain_m") -> go.Figure:
+    """Bar: total elevation per member."""
     totals = {m: 0 for m in MEMBERS}
     if not workouts_df.empty:
+        col = elev_col if elev_col in workouts_df.columns else "elevation_gain_m"
         for m, grp in workouts_df.groupby("hiker_name"):
             if m in totals:
-                totals[m] = int(grp["elevation_gain_m"].sum())
+                totals[m] = int(grp[col].sum())
 
     members = list(totals.keys())
     values = [totals[m] for m in members]
@@ -95,15 +96,20 @@ def make_group_totals(workouts_df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def make_group_weekly_stacked(weekly_df: pd.DataFrame, plan_df: pd.DataFrame) -> go.Figure:
+def make_group_weekly_stacked(
+    weekly_df: pd.DataFrame,
+    plan_df: pd.DataFrame,
+    elev_col: str = "elevation_gain_m",
+) -> go.Figure:
     """Grouped bar: weekly elevation by member + plan target line."""
     fig = _base_fig(barmode="group")
 
     all_weeks = list(range(1, 27))
+    col = elev_col if (not weekly_df.empty and elev_col in weekly_df.columns) else "elevation_gain_m"
 
     for member in MEMBERS:
         m = weekly_df[weekly_df["hiker_name"] == member] if not weekly_df.empty else pd.DataFrame()
-        elev_by_week = m.set_index("week")["elevation_gain_m"].reindex(all_weeks, fill_value=0) if not m.empty else pd.Series(0, index=all_weeks)
+        elev_by_week = m.set_index("week")[col].reindex(all_weeks, fill_value=0) if not m.empty else pd.Series(0, index=all_weeks)
         fig.add_trace(go.Bar(
             x=all_weeks,
             y=elev_by_week.values,
@@ -124,12 +130,14 @@ def make_group_weekly_stacked(weekly_df: pd.DataFrame, plan_df: pd.DataFrame) ->
     return fig
 
 
-def make_scatter(workouts_df: pd.DataFrame) -> go.Figure:
-    """Scatter: elevation gain vs distance, each workout coloured by member."""
+def make_scatter(workouts_df: pd.DataFrame, elev_col: str = "elevation_gain_m") -> go.Figure:
+    """Scatter: elevation vs distance per workout, coloured by member."""
     fig = _base_fig()
 
     if workouts_df.empty:
         return fig
+
+    col = elev_col if elev_col in workouts_df.columns else "elevation_gain_m"
 
     for member in MEMBERS:
         m = workouts_df[workouts_df["hiker_name"] == member]
@@ -137,7 +145,7 @@ def make_scatter(workouts_df: pd.DataFrame) -> go.Figure:
             continue
         fig.add_trace(go.Scatter(
             x=m["distance_km"],
-            y=m["elevation_gain_m"],
+            y=m[col],
             mode="markers",
             name=member,
             marker=dict(color=MEMBER_COLORS.get(member, "#333"), size=8, opacity=0.75),

@@ -34,6 +34,7 @@ HIKE_COLS = [
     "elevation_gain_m",
     "distance_km",
     "duration_minutes",
+    "pack_weight_kg",
     "notes",
 ]
 
@@ -95,7 +96,7 @@ def load_hikes() -> pd.DataFrame:
             if col not in df.columns:
                 df[col] = ""
         df["hike_date"] = pd.to_datetime(df["hike_date"], errors="coerce").dt.date
-        for col in ("elevation_gain_m", "distance_km", "duration_minutes"):
+        for col in ("elevation_gain_m", "distance_km", "duration_minutes", "pack_weight_kg"):
             df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
         return df.dropna(subset=["hike_date"]).reset_index(drop=True)
     except Exception as e:
@@ -114,6 +115,7 @@ def append_hike(
     elevation_gain_m: float,
     distance_km: float,
     duration_minutes: int,
+    pack_weight_kg: float,
     notes: str,
 ) -> None:
     ws = _get_worksheet()
@@ -126,5 +128,6 @@ def append_hike(
         int(elevation_gain_m),
         round(distance_km, 2),
         int(duration_minutes),
+        round(pack_weight_kg, 1),
         notes.strip(),
     ])
