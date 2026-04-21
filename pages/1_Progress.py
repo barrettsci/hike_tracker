@@ -44,9 +44,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-col1, col2 = st.columns(2)
+planned_elev = (
+    int(PLAN_DF.loc[PLAN_DF["week"] == cw, "target_elevation_m"].iloc[0])
+    if cw > 0 else None
+)
+
+col1, col2, col3 = st.columns(3)
 col1.metric("Days to climb", days_left)
 col2.metric("Current week", f"Week {cw}" if cw > 0 else "—")
+col3.metric("Planned this week", f"{planned_elev:,} m" if planned_elev is not None else "—")
 
 st.divider()
 
