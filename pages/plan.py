@@ -4,14 +4,8 @@ from __future__ import annotations
 
 import streamlit as st
 
-from auth import require_auth
 from charts import PLOTLY_CFG, make_plan_overview
 from data import PLAN_DF
-from ui import show_nav
-
-st.set_page_config(page_title="Plan · Bogong 2026", page_icon="⛰", layout="centered")
-require_auth()
-show_nav("plan")
 
 st.title("Plan")
 st.caption("26-week Uphill Athlete plan · target 1800 m · 10 Oct 2026")

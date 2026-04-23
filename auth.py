@@ -23,6 +23,9 @@ def _token(pwd: str) -> str:
 
 _MOBILE_CSS = """
 <style>
+/* ── Title ───────────────────────────────────────────────────────────────── */
+h1 { font-size: 1.75rem !important; line-height: 1.2 !important; }
+
 /* ── Layout ──────────────────────────────────────────────────────────────── */
 .block-container {
     padding: 1rem 1rem 3rem;
@@ -97,7 +100,7 @@ def require_auth() -> None:
         st.query_params["auth"] = token
         return
 
-    st.title("⛰ Bogong 2026")
+    st.title("⛰ Marina's 40th 🎉")
     with st.form("auth_form"):
         pwd = st.text_input("Password", type="password", label_visibility="collapsed",
                             placeholder="Enter password…")

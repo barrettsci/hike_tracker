@@ -6,9 +6,9 @@ import streamlit as st
 
 # (href, label, key)
 _PAGES = [
-    ("/",               "Log",      "log"),
-    ("/Progress",       "Progress", "progress"),
-    ("/Training_Plan",  "Plan",     "plan"),
+    ("/",         "Log",      "log"),
+    ("/progress", "Progress", "progress"),
+    ("/plan",     "Plan",     "plan"),
 ]
 
 
@@ -20,10 +20,6 @@ def show_nav(current: str = "") -> None:
     """
     st.markdown("""
 <style>
-[data-testid^="stSidebar"],
-[data-testid="collapsedControl"],
-[data-testid*="ollapsed"],
-[data-testid="stExpandSidebarButton"] { display: none !important; }
 /* Force nav columns to lay out horizontally */
 [data-testid="stHorizontalBlock"] {
     display: flex !important;

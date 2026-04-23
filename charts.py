@@ -156,6 +156,54 @@ def make_scatter(workouts_df: pd.DataFrame, elev_col: str = "elevation_gain_m") 
     return fig
 
 
+def make_weekly_target_progress(
+    wa: pd.DataFrame,
+    plan_df: pd.DataFrame,
+    current_week: int,
+    elev_col: str = "elevation_gain_m",
+) -> go.Figure:
+    """Stacked bar: each member's achieved vs remaining elevation for the current week."""
+    target_row = plan_df.loc[plan_df["week"] == current_week, "target_elevation_m"]
+    target = int(target_row.iloc[0]) if not target_row.empty else 0
+
+    col = elev_col if (not wa.empty and elev_col in wa.columns) else "elevation_gain_m"
+    cw_data = wa[wa["week"] == current_week] if not wa.empty else pd.DataFrame()
+
+    achieved, remaining, colors = [], [], []
+    for member in MEMBERS:
+        row = cw_data[cw_data["hiker_name"] == member]
+        val = int(row[col].sum()) if not row.empty else 0
+        achieved.append(min(val, target))
+        remaining.append(max(target - val, 0))
+        colors.append(MEMBER_COLORS.get(member, "#333"))
+
+    fig = _base_fig(barmode="stack")
+
+    fig.add_trace(go.Bar(
+        x=MEMBERS,
+        y=achieved,
+        name="Achieved",
+        marker_color=colors,
+        text=[f"{v:,} m" if v > 0 else "" for v in achieved],
+        textposition="inside",
+        insidetextanchor="middle",
+    ))
+    fig.add_trace(go.Bar(
+        x=MEMBERS,
+        y=remaining,
+        name="Remaining",
+        marker_color="#E0E0E0",
+        text=[f"{v:,} m" if v > 0 else "" for v in remaining],
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(color="#999"),
+    ))
+
+    fig.update_xaxes(fixedrange=True)
+    fig.update_yaxes(title_text="Elevation (m)", fixedrange=True)
+    return fig
+
+
 # ── Training plan chart ───────────────────────────────────────────────────────
 
 def make_plan_overview(plan_df: pd.DataFrame) -> go.Figure:

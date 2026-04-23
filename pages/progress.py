@@ -8,21 +8,16 @@ import pandas as pd
 import streamlit as st
 
 import plan as training_plan
-from auth import require_auth
 from charts import (
     PLOTLY_CFG,
     make_group_cumulative,
     make_group_totals,
     make_group_weekly_stacked,
     make_scatter,
+    make_weekly_target_progress,
 )
 from config import EVENT_DATE, MEMBERS
 from data import PLAN_DF, cumulative_actual, load_workouts, weekly_actual
-from ui import show_nav
-
-st.set_page_config(page_title="Progress · Bogong 2026", page_icon="⛰", layout="centered")
-require_auth()
-show_nav("progress")
 
 st.title("Progress")
 
@@ -127,6 +122,10 @@ with tab_raw:
 
     st.divider()
 
+    if cw > 0:
+        st.subheader(f"Week {cw} target progress")
+        st.plotly_chart(make_weekly_target_progress(wa, PLAN_DF, cw, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG)
+
     st.subheader("Cumulative elevation vs plan")
     st.plotly_chart(make_group_cumulative(ca_raw, PLAN_DF), use_container_width=True, config=PLOTLY_CFG)
 
@@ -144,6 +143,10 @@ with tab_adj:
     _leaderboard(wa, elev_col="adjusted_elevation_m")
 
     st.divider()
+
+    if cw > 0:
+        st.subheader(f"Week {cw} target progress")
+        st.plotly_chart(make_weekly_target_progress(wa, PLAN_DF, cw, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG)
 
     st.subheader("Cumulative elevation vs plan")
     st.plotly_chart(make_group_cumulative(ca_adj, PLAN_DF), use_container_width=True, config=PLOTLY_CFG)
