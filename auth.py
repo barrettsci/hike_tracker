@@ -100,8 +100,9 @@ def require_auth() -> None:
         st.query_params["auth"] = token
         return
 
-    st.title("⛰ Marina's 40th 🎉")
-    with st.form("auth_form"):
+    _, col, _ = st.columns([1, 2, 1])
+    col.title("⛰ Marina's 40th 🎉")
+    with col.form("auth_form"):
         pwd = st.text_input("Password", type="password", label_visibility="collapsed",
                             placeholder="Enter password…")
         submitted = st.form_submit_button("Enter", use_container_width=True)

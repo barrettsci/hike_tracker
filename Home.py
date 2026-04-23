@@ -8,7 +8,6 @@ from auth import require_auth
 from ui import show_nav
 
 st.set_page_config(page_title="Marina's 40th 🎉", page_icon="⛰", layout="centered")
-require_auth()
 
 pg = st.navigation(
     [
@@ -18,5 +17,8 @@ pg = st.navigation(
     ],
     position="hidden",
 )
+
+require_auth()
+
 show_nav(pg.title.lower())
 pg.run()
