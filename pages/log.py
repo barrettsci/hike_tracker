@@ -87,6 +87,7 @@ if submitted:
                 adj = pandolf_adjusted_elev(elev, pack_weight, members[0])
                 msg += f" · pack {pack_weight} kg → adjusted {int(adj):,} m"
             st.success(msg)
+            st.balloons()
         except Exception as exc:
             st.error(f"Error saving workout: {exc}")
 
