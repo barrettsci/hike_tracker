@@ -81,7 +81,7 @@ def _leaderboard(wa: pd.DataFrame, elev_col: str) -> None:
         leader_plan = dev_series.idxmin()
         leader_plan_dev = int(dev_series.min())
 
-        st.caption("Overall")
+        st.caption("Overall (to end of last completed week)")
         st.markdown(
             f"- **Most elevation** — {leader_elev} ({leader_elev_val:,} m)\n"
             f"- **Closest to plan** — {leader_plan} ({leader_plan_dev:,} m deviation)"
