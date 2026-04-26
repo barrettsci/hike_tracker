@@ -124,19 +124,19 @@ with tab_raw:
 
     if cw > 0:
         st.subheader(f"Week {cw} target progress")
-        st.plotly_chart(make_weekly_target_progress(wa, PLAN_DF, cw, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG)
+        st.plotly_chart(make_weekly_target_progress(wa, PLAN_DF, cw, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG, key="raw_weekly_progress")
 
     st.subheader("Cumulative elevation vs plan")
-    st.plotly_chart(make_group_cumulative(ca_raw, PLAN_DF), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_group_cumulative(ca_raw, PLAN_DF), use_container_width=True, config=PLOTLY_CFG, key="raw_cumulative")
 
     st.subheader("Total elevation to date")
-    st.plotly_chart(make_group_totals(df, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_group_totals(df, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG, key="raw_totals")
 
     st.subheader("Weekly elevation vs plan")
-    st.plotly_chart(make_group_weekly_stacked(wa, PLAN_DF, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_group_weekly_stacked(wa, PLAN_DF, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG, key="raw_weekly_stacked")
 
     st.subheader("Elevation vs distance per workout")
-    st.plotly_chart(make_scatter(df, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_scatter(df, elev_col="elevation_gain_m"), use_container_width=True, config=PLOTLY_CFG, key="raw_scatter")
 
 with tab_adj:
     st.subheader("Leaderboard")
@@ -146,19 +146,19 @@ with tab_adj:
 
     if cw > 0:
         st.subheader(f"Week {cw} target progress")
-        st.plotly_chart(make_weekly_target_progress(wa, PLAN_DF, cw, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG)
+        st.plotly_chart(make_weekly_target_progress(wa, PLAN_DF, cw, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG, key="adj_weekly_progress")
 
     st.subheader("Cumulative elevation vs plan")
-    st.plotly_chart(make_group_cumulative(ca_adj, PLAN_DF), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_group_cumulative(ca_adj, PLAN_DF), use_container_width=True, config=PLOTLY_CFG, key="adj_cumulative")
 
     st.subheader("Total elevation to date")
-    st.plotly_chart(make_group_totals(df, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_group_totals(df, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG, key="adj_totals")
 
     st.subheader("Weekly elevation vs plan")
-    st.plotly_chart(make_group_weekly_stacked(wa, PLAN_DF, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_group_weekly_stacked(wa, PLAN_DF, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG, key="adj_weekly_stacked")
 
     st.subheader("Elevation vs distance per workout")
-    st.plotly_chart(make_scatter(df, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG)
+    st.plotly_chart(make_scatter(df, elev_col="adjusted_elevation_m"), use_container_width=True, config=PLOTLY_CFG, key="adj_scatter")
 
 
 # ── Refresh ───────────────────────────────────────────────────────────────────
