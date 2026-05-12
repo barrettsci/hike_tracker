@@ -1,6 +1,8 @@
-# Bogong 2026 — Training Tracker
+# Hiking training tracker
 
-A group training tracker for a planned hike. Tracks groupmembers training against a 26-week plan.
+A group training tracker for a planned hike.
+
+Current version tracks groupmembers' elevation gain against a 26-week plan (adjust to suit your own goals).
 
 ## Running locally
 
